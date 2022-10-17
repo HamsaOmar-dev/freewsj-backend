@@ -4,7 +4,7 @@
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["referentialIntegrity"]
-  binaryTargets = ["native", "rhel-openssl-1.0.x"]
+  binaryTargets   = ["native", "rhel-openssl-1.0.x"]
 }
 
 datasource db {
@@ -12,10 +12,12 @@ datasource db {
   url                  = env("DATABASE_URL")
   referentialIntegrity = "prisma"
 }
+
 model Article {
   id        Int      @id @default(autoincrement())
   title     String   @unique @db.VarChar(255)
-  content   String
+  subTitle  String
+  body      String   @db.Text
   image     String?
   date      String
   author    String

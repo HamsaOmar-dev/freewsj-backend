@@ -89,12 +89,12 @@ async function start() {
           author: author?.textContent || "The Editorial Board",
           title: title?.textContent || "",
           subTitle: subTitle?.textContent,
-          body: body1.concat(body2),
-          image: {
+          body: JSON.stringify(body1.concat(body2)),
+          image: JSON.stringify({
             src: image?.src,
             width: image?.width.toString(),
             height: image?.height.toString(),
-          },
+          }),
           date:
             date?.textContent ||
             new Date().toLocaleString([], {
@@ -103,31 +103,30 @@ async function start() {
             }),
         };
 
-        article.body.pop();
+        JSON.parse(article.body).pop();
 
-        if (article.body[0] === null) {
-          article.body.splice(0, 1);
-        } else if (article.body[-1] === null) {
-          article.body.pop();
+        if (JSON.parse(article.body)[0] === null) {
+          JSON.parse(article.body).splice(0, 1);
+        } else if (JSON.parse(article.body)[-1] === null) {
+          JSON.parse(article.body).pop();
         } else null;
 
-        return article.title === "" || article.body.length === 0
+        return article.title === "" || JSON.parse(article.body).length === 0
           ? undefined
           : article;
       })
-      .then((data) => {
+      .then(async (data) => {
         {
           data === undefined
             ? null
-            : // await prisma.article
-              //   .create({
-              //     data: data,
-              //   })
-              //   .then(() => {
-              //     res.json("New Article Saved to Prisma DB");
-              //   })
-              //   .catch((err) => console.log(err));;
-              console.log(data);
+            : await prisma.article
+                .create({
+                  data: data,
+                })
+                .then(() => {
+                  console.log("New Article Saved to Prisma DB");
+                })
+                .catch((err) => console.log(err));
         }
       })
       .catch((err) => console.log(err));

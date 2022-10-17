@@ -3,7 +3,7 @@ name: Scrape WSJ
 on:
   # Triggers the workflow every 5 minutes
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "0 */2 * * *"
 
 jobs:
   Scrape:
@@ -23,4 +23,4 @@ jobs:
       - name: Run Code
         run: |
           cd services
-          node test.js
+          node articleScrape.js
