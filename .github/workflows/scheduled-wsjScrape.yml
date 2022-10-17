@@ -6,9 +6,8 @@ on:
     - cron: "*/5 * * * *"
 
 jobs:
-  cron:
+  Scrape:
     runs-on: ubuntu-latest
-
 
     steps:
       # Runs a single command using the runners shell
@@ -20,7 +19,7 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        
+
       - name: Run Code
         run: |
           cd services
