@@ -1,0 +1,27 @@
+name: Scrape WSJ
+
+on:
+  # Triggers the workflow every 5 minutes
+  schedule:
+    - cron: "*/5 * * * *"
+
+jobs:
+  cron:
+    runs-on: ubuntu-latest
+
+
+    steps:
+      # Runs a single command using the runners shell
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+
+      - name: Install dependencies
+        run: npm install
+        
+      - name: Run Code
+        run: |
+          cd services
+          node test.js
