@@ -3,7 +3,7 @@ name: Scrape WSJ
 on:
   # Triggers the workflow every 5 minutes
   schedule:
-    - cron: "0 */2 * * *"
+    - cron: "*/5 * * * *"
 
 jobs:
   Scrape:
@@ -16,6 +16,9 @@ jobs:
 
       - name: Setup node
         uses: actions/setup-node@v3
+
+      - name: Install Chromium
+        run: apt-get install chromium-browser
 
       - name: Install dependencies
         run: npm install

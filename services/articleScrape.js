@@ -5,7 +5,7 @@ async function start() {
   const extentionPath = "./bypass-paywalls-chrome-master";
 
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     args: [
       `--disable-extensions-except=${extentionPath}`,
       `--load-extension=${extentionPath}`,
