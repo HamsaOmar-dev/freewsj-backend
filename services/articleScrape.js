@@ -6,7 +6,7 @@ async function start() {
 
   const browser = await puppeteer.launch({
     executablePath: '/usr/bin/chromium-browser',
-    headless: true,
+    headless: false,
     args: [
       `--disable-extensions-except=${extentionPath}`,
       `--load-extension=${extentionPath}`,
