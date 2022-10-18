@@ -4,7 +4,7 @@ router.get("/articles", async (req, res) => {
   await prisma.article
     .findMany()
     .then((articles) => {
-      res.json(articles);
+      res.json(articles.reverse());
       console.log("Articles List sent from DB");
     })
     .catch((err) => console.log(err));

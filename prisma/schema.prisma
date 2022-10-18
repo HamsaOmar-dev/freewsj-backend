@@ -16,7 +16,7 @@ datasource db {
 model Article {
   id        Int      @id @default(autoincrement())
   title     String   @unique @db.VarChar(255)
-  subTitle  String
+  subTitle  String?  @db.VarChar(255)
   body      String   @db.Text
   image     String?
   date      String

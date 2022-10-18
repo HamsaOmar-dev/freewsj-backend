@@ -5,7 +5,7 @@ async function start() {
   const extentionPath = "./bypass-paywalls-chrome-master";
 
   const browser = await puppeteer.launch({
-    executablePath: '/usr/bin/chromium-browser',
+    // executablePath: "/usr/local/bin/chromium",
     headless: false,
     args: [
       `--disable-extensions-except=${extentionPath}`,
@@ -47,42 +47,40 @@ async function start() {
       .evaluate(() => {
         const author =
           Array.from(
-            document.getElementsByClassName("css-1ohky7u-AuthorLink")
+            document.getElementsByClassName("css-mbn33i-AuthorLink")
           )[0] ||
           Array.from(
-            document.getElementsByClassName("css-jmaeq5-PlainByline")
+            document.getElementsByClassName("css-1qf7jf5-PlainByline")
           )[0];
         const title =
-          document.querySelector(
-            "#__next > div > main > div.css-u1dda4.e105m3c32 > div > div.crawler.css-bsrkcm-Box.e1vnmyci0 > h1"
-          ) || document.querySelector("#main > header > div > div > h1");
-        const subTitle =
-          document.querySelector(
-            "#__next > div > main > div.css-u1dda4.e105m3c32 > div > h2"
-          ) || document.querySelector("#main > header > div > div > h2");
-        const body1 = Array.from(
-          document.querySelectorAll(
-            "#__next > div > main > article > div.crawler.css-1rlknzd.e1of74uw7 > section > p"
-          ) ||
-            document.querySelectorAll(
-              "#wsj-article-wrap > div.article-content > p"
+          Array.from(
+            document.getElementsByClassName("css-1lvqw7f-StyledHeadline")
+          )[0] ||
+          Array.from(
+            document.getElementsByClassName(
+              "css-1ruciut-StyledHeadline-BigTopHeadline"
             )
-        ).map((bodyData) => bodyData?.textContent || undefined);
-        const body2 = Array.from(
-          document.querySelectorAll(
-            "#__next > div > main > article > div.crawler.css-1rlknzd.e1of74uw7 > section > div > p"
-          ) ||
-            document.querySelectorAll(
-              "#wsj-article-wrap > div.article-content > div.paywall > p"
+          )[0] ||
+          Array.from(
+            document.getElementsByClassName(
+              "css-456klt-StyledHeadline-BigTopHeadline-BigTopHeadline"
             )
-        ).map((bodyData) => bodyData?.textContent || undefined);
-        const image =
-          document.querySelector(
-            "#wsj-article-wrap > div.is-lead-inset > div > figure > div > img"
-          ) ||
-          document.querySelector(
-            "#__next > div > main > article > div.crawler.css-1rlknzd.e1of74uw7 > div.media-layout.css-9oedd1-Layout.ek23gj80 > figure > img"
-          );
+          )[0];
+        const subTitle = Array.from(
+          document.getElementsByClassName("css-mosdo-Dek-Dek")
+        )[0];
+        const body = Array.from(
+          document.getElementsByClassName("css-xbvutc-Paragraph")
+        ).map((bodyData) => bodyData?.textContent);
+        // const body2 = Array.from(
+        //   document.querySelectorAll(
+        //     "#__next > div > main > article > div.crawler.css-1rlknzd.e1of74uw7 > section > div > p"
+        //   ) ||
+        //     document.querySelectorAll(
+        //       "#wsj-article-wrap > div.article-content > div.paywall > p"
+        //     )
+        // ).map((bodyData) => bodyData?.textContent || undefined);
+        const image = Array.from(document.getElementsByTagName("img"))[0];
         const date = Array.from(
           document.getElementsByClassName("css-a8mttu-Timestamp-Timestamp")
         )[0];
@@ -90,7 +88,7 @@ async function start() {
           author: author?.textContent || "The Editorial Board",
           title: title?.textContent || "",
           subTitle: subTitle?.textContent,
-          body: JSON.stringify(body1.concat(body2)),
+          body: JSON.stringify(body),
           image: JSON.stringify({
             src: image?.src,
             width: image?.width.toString(),
@@ -106,11 +104,11 @@ async function start() {
 
         JSON.parse(article.body).pop();
 
-        if (JSON.parse(article.body)[0] === null) {
-          JSON.parse(article.body).splice(0, 1);
-        } else if (JSON.parse(article.body)[-1] === null) {
-          JSON.parse(article.body).pop();
-        } else null;
+        // if (JSON.parse(article.body)[0] === null) {
+        //   JSON.parse(article.body).splice(0, 1);
+        // } else if (JSON.parse(article.body)[-1] === null) {
+        //   JSON.parse(article.body).pop();
+        // } else null;
 
         return article.title === "" || JSON.parse(article.body).length === 0
           ? undefined
@@ -119,7 +117,7 @@ async function start() {
       .then(async (data) => {
         {
           data === undefined
-            ? null
+            ? console.log("Failed to Save Article because of Missing Data")
             : await prisma.article
                 .create({
                   data: data,

@@ -4,7 +4,7 @@ const prisma = require("../prisma.js");
 router.get("/", async (req, res) => {
   await prisma.article
     .findMany({
-      take: 7,
+      take: -7,
     })
     .then((articles) => {
       res.json(articles);
