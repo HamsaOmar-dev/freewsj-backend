@@ -15,6 +15,7 @@ async function start() {
   const page = await browser.newPage();
 
   let links = [];
+  let duplicates = 0;
 
   await page
     .goto("https://www.wsj.com/news/latest-headlines?mod=wsjheader", {
@@ -72,18 +73,13 @@ async function start() {
         const body = Array.from(
           document.getElementsByClassName("css-xbvutc-Paragraph")
         ).map((bodyData) => bodyData?.textContent);
-        // const body2 = Array.from(
-        //   document.querySelectorAll(
-        //     "#__next > div > main > article > div.crawler.css-1rlknzd.e1of74uw7 > section > div > p"
-        //   ) ||
-        //     document.querySelectorAll(
-        //       "#wsj-article-wrap > div.article-content > div.paywall > p"
-        //     )
-        // ).map((bodyData) => bodyData?.textContent || undefined);
         const image = Array.from(document.getElementsByTagName("img"))[0];
         const date = Array.from(
           document.getElementsByClassName("css-a8mttu-Timestamp-Timestamp")
         )[0];
+
+        body.pop();
+
         const article = {
           author: author?.textContent || "The Editorial Board",
           title: title?.textContent || "",
@@ -97,18 +93,11 @@ async function start() {
           date:
             date?.textContent ||
             new Date().toLocaleString([], {
+              timeZone: "America/New_York",
               dateStyle: "medium",
               timeStyle: "long",
             }),
         };
-
-        JSON.parse(article.body).pop();
-
-        // if (JSON.parse(article.body)[0] === null) {
-        //   JSON.parse(article.body).splice(0, 1);
-        // } else if (JSON.parse(article.body)[-1] === null) {
-        //   JSON.parse(article.body).pop();
-        // } else null;
 
         return article.title === "" || JSON.parse(article.body).length === 0
           ? undefined
@@ -125,10 +114,19 @@ async function start() {
                 .then(() => {
                   console.log("New Article Saved to Prisma DB");
                 })
-                .catch((err) => console.log(err));
+                .catch((err) => {
+                  if (err.code == "P2002") {
+                    duplicates++;
+                    console.log("Already in DB");
+                  } else console.log(err);
+                });
         }
       })
       .catch((err) => console.log(err));
+    if (duplicates >= 5) {
+      console.log("Too Many Duplicates");
+      break;
+    }
   }
   await browser.close();
 }
