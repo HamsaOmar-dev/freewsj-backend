@@ -7,7 +7,7 @@ router.get("/", async (req, res) => {
       take: 7,
     })
     .then((articles) => {
-      res.json(articles);
+      res.json(articles.reverse());
       console.log("Home Article List sent from DB");
     })
     .catch((err) => console.log(err));
