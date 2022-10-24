@@ -32,7 +32,7 @@ async function scrapeWSJ() {
       )
     ).map((data) => data.href);
 
-    return link.slice(0, 3);
+    return link;
   });
 
   links.reverse();
