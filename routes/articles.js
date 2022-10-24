@@ -65,7 +65,24 @@ router.get("/articles/:articleTitle", async (req, res) => {
 router.delete("/articles", async (req, res) => {
   await prisma.article
     .deleteMany()
-    .then(() => res.json("All Articles have been Deleted"))
+    .then(() => {
+      res.json("All Articles have been Deleted");
+      console.log("All Articles have been Deleted");
+    })
+    .catch((err) => console.log(err));
+});
+
+router.delete("/articles/:articleTitle", async (req, res) => {
+  const articleTitle = req.params.articleTitle;
+
+  await prisma.article
+    .delete({
+      where: { title: articleTitle },
+    })
+    .then(() => {
+      res.json("Article has been Deleted");
+      console.log("Article has been Deleted");
+    })
     .catch((err) => console.log(err));
 });
 

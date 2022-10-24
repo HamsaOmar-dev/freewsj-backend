@@ -1,7 +1,9 @@
 const prisma = require("../prisma.js");
 const puppeteer = require("puppeteer");
+const cron = require("node-cron");
+const axios = require("axios");
 
-async function start() {
+async function scrapeWSJ() {
   const extentionPath = "./bypass-paywalls-chrome-master";
 
   const browser = await puppeteer.launch({
@@ -15,7 +17,6 @@ async function start() {
   const page = await browser.newPage();
 
   let links = [];
-  let duplicates = 0;
 
   await page
     .goto("https://www.wsj.com/news/latest-headlines?mod=wsjheader", {
@@ -31,8 +32,10 @@ async function start() {
       )
     ).map((data) => data.href);
 
-    return link;
+    return link.slice(0, 3);
   });
+
+  links.reverse();
 
   console.log(links);
 
@@ -111,24 +114,39 @@ async function start() {
                 .create({
                   data: data,
                 })
-                .then(() => {
+                .then(async () => {
                   console.log("New Article Saved to Prisma DB");
+
+                  await prisma.article
+                    .findMany()
+                    .then(async (articles) => {
+                      if (articles.length > 100) {
+                        await prisma.article
+                          .delete({
+                            where: { title: articles[-1].title },
+                          })
+                          .then(() => console.log("Deleted Oldest Article"))
+                          .catch((err) => console.log(err));
+                      } else null;
+                    })
+                    .catch((err) => console.log(err));
                 })
-                .catch((err) => {
-                  if (err.code == "P2002") {
-                    duplicates++;
-                    console.log("Already in DB");
-                  } else console.log(err);
-                });
+                .catch((err) => console.log(err));
         }
       })
       .catch((err) => console.log(err));
-    if (duplicates >= 5) {
-      console.log("Too Many Duplicates");
-      break;
-    }
   }
   await browser.close();
+  await axios
+    .get(
+      "https://api.vercel.com/v1/integrations/deploy/prj_AUZzHmtBiiXoGnGo5UvVAoEzL1Kz/EM5nKmAFJ7?buildCache=false"
+    )
+    .then(() => console.log("Sent ReDeploy Request to Vercel"))
+    .catch((err) => console.log(err));
+
+  console.log("Finised Scraping Articles");
 }
 
-start().catch((err) => console.log(err));
+scrapeWSJ();
+
+const job = cron.schedule("* */2 * * *", scrapeWSJ);
