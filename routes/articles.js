@@ -44,16 +44,16 @@ router.get("/articles/:articleTitle", async (req, res) => {
         title: articleTitle,
       },
     })
-    .then(async (article) => {
-      res.json(article);
+    .then(async (data) => {
+      res.json(data);
       console.log("Article sent from DB");
       await prisma.article
         .update({
           where: {
-            title: article.title,
+            title: data.title,
           },
           data: {
-            views: article.views + 1,
+            views: data.views + 1,
           },
         })
         .then(() => console.log("Updated Article Views"))

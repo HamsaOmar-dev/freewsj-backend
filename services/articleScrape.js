@@ -73,6 +73,9 @@ async function scrapeWSJ() {
         const subTitle = Array.from(
           document.getElementsByClassName("css-mosdo-Dek-Dek")
         )[0];
+        const topic = Array.from(
+          document.getElementsByClassName("css-12fqrno-Link-Link")
+        )[0];
         const body = Array.from(
           document.getElementsByClassName("css-xbvutc-Paragraph")
         ).map((bodyData) => bodyData?.textContent);
@@ -87,12 +90,14 @@ async function scrapeWSJ() {
           author: author?.textContent || "The Editorial Board",
           title: title?.textContent || "",
           subTitle: subTitle?.textContent,
+          topic: topic?.textContent,
           body: JSON.stringify(body),
           image: JSON.stringify({
             src: image?.src,
             width: image?.width.toString(),
             height: image?.height.toString(),
           }),
+          views: 0,
           date:
             date?.textContent ||
             new Date().toLocaleString([], {
