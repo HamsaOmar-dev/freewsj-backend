@@ -58,9 +58,11 @@ app.use(
 
 const indexRouter = require("./routes/index.js");
 const articlesRouter = require("./routes/articles.js");
+const topicRouter = require("./routes/topic.js");
 
 app.use("/", indexRouter);
 app.use("/", articlesRouter);
+app.use("/", topicRouter);
 
 app.listen(port, () => {
   console.log("Listening on port " + port);

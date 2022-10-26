@@ -17,6 +17,7 @@ async function scrapeWSJ() {
   const page = await browser.newPage();
 
   let links = [];
+  let startTime = new Date().getTime();
 
   await page
     .goto("https://www.wsj.com/news/latest-headlines?mod=wsjheader", {
@@ -32,7 +33,7 @@ async function scrapeWSJ() {
       )
     ).map((data) => data.href);
 
-    return link;
+    return link.slice(0, 2);
   });
 
   links.reverse();
@@ -149,7 +150,9 @@ async function scrapeWSJ() {
     .then(() => console.log("Sent ReDeploy Request to Vercel"))
     .catch((err) => console.log(err));
 
-  console.log("Finised Scraping Articles");
+  const totalTime = (new Date().getTime() - startTime) / 1000 + " seconds";
+
+  console.log("Finised Scraping Articles in " + totalTime);
 }
 
 scrapeWSJ();

@@ -6,6 +6,7 @@ router.get("/articles", async (req, res) => {
     .findMany()
     .then((articles) => {
       res.json(articles.reverse());
+      console.log(articles.length);
       console.log("Articles List sent from DB");
     })
     .catch((err) => console.log(err));
